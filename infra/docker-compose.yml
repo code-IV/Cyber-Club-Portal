@@ -3,7 +3,7 @@ services:
   challenge:
     build: ../challenge
     ports:
-      - "4000:80"
+      - "4000:8080"
     environment:
       - DATABASE_URL=${POSTGRES_URL}
     networks:
@@ -11,7 +11,7 @@ services:
   community:
     build: ../community
     ports:
-      - "6000:80"
+      - "6000:8080"
     environment:
       - DATABASE_URL=${POSTGRES_URL}
     networks:
@@ -19,7 +19,7 @@ services:
   gateway:
     build: ../gateway
     ports:
-      - "5000:80"
+      - "5000:8080"
     environment:
       - IDENTITY_SERVICE_URL=http://identity:80
       - LEARN_SERVICE_URL=http://learn:80
@@ -30,7 +30,7 @@ services:
   identity:
     build: ../identity
     ports:
-      - "7000:80"
+      - "7000:8080"
     environment:
       - DATABASE_URL=${POSTGRES_URL}
     networks:
@@ -38,7 +38,7 @@ services:
   learn:
     build: ../learn
     ports:
-      - "8000:80"
+      - "8000:8080"
     environment:
       - DATABASE_URL=${POSTGRES_URL}
     networks:
@@ -46,7 +46,7 @@ services:
   portal:
     build: ../portal
     ports:
-      - "8080:80"
+      - "8080:8080"
     environment:
       - DATABASE_URL=${POSTGRES_URL}
     networks:
@@ -65,7 +65,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - "${HOST_PORT_PGADMIN}:80"
+      - "${HOST_PORT_PGADMIN}:8081"
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
