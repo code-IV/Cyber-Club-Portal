@@ -9,6 +9,17 @@ The Portal Service provides the **foundation and administration** layer for each
 - **Administration:** Provides the administrative user interface endpoints for tenant-level settings.
 - **Content:** Manages global announcements and basic public portal content.
 
+## 🚀 Self-Serve Tenant Creation Workflow
+
+The Portal Service manages the critical, multi-step sequence for automatically provisioning a new tenant via the self-serve signup flow.
+
+1.  **Validate Request:** Authenticate the incoming request and validate the proposed tenant ID (e.g., uniqueness, compliance with naming rules).
+2.  **Create Schema:** Execute the database command to create the isolated schema for the new tenant: `CREATE SCHEMA tenant_x`.
+3.  **Run Flyway:** Execute the **service-baseline** Flyway migration scripts against the newly created schema (`tenant_x`), setting up all necessary tables for the Community, Learn, and Challenge tenants.
+4.  **Seed Defaults:** Seed the new schema with default roles, settings, and initial administrative content.
+5.  **Create Membership:** Create the initial membership record for the signing-up user, assigning them the `ADMIN` role within the new tenant's context.
+6.  **Notify Identity Service:** Send a notification (e.g., via webhook/API call) to the **Identity Service** to update the user's global membership table, allowing the user to be routed to the new tenant.
+
 ## 💾 Data Schema Note
 
 This service uses a **Schema-per-Tenant** approach.

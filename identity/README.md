@@ -26,12 +26,26 @@ This service is unique as it uses a **shared global schema** named `identity` fo
 | `/users/{id}/memberships` | Retrieves all tenants a user belongs to.                              |
 | `[Admin]`                 | Endpoints for administrative user management (e.g., role assignment). |
 
+**➡️ Full API Contract:** The detailed contract for these endpoints is maintained in the dedicated specification file: **`specs/auth-endpoints.md`**.
+
 ## 📢 Internal Events
 
 This service notifies other components of critical changes via internal events (e.g., REST callbacks or webhooks):
 
 - `user.created`: When a new user is registered.
 - `membership.changed`: When a user is added to or removed from a tenant.
+
+## 🔑 Required Environment Variables
+
+The following variables must be configured for the service to function:
+
+| Variable             | Purpose                                                                              |
+| :------------------- | :----------------------------------------------------------------------------------- |
+| `OIDC_ISSUER`        | Base URL of the University's OIDC Provider.                                          |
+| `OIDC_CLIENT_ID`     | Client ID registered with the OIDC Provider.                                         |
+| `OIDC_CLIENT_SECRET` | Secret key for the registered OIDC Client.                                           |
+| `JWT_SIGNING_KEY`    | Secret key used to sign internal JWTs for service consumption.                       |
+| `POSTGRES_URL`       | Connection URL for the Supabase/PostgreSQL database (pointing to the shared schema). |
 
 ## ⚙️ Building and Running
 

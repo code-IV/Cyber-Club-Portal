@@ -1,0 +1,33 @@
+name: continous integration pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feature/*
+  pull_request:
+    branches:
+      - main
+jobs:
+  build_and_test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: placeholder step
+        run: echo "This is a placeholder for the CI pipeline."
+
+  docker_build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [build_and_test]
+    steps:
+      - name: placeholder step
+        run: echo "This is a placeholder for the Docker build process."
+
+  integration_test:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    needs: [docker_build]
+    steps:
+      - name: placeholder step
+        run: echo "This is a placeholder for the integration tests."
