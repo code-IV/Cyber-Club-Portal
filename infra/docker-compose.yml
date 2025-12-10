@@ -1,0 +1,77 @@
+version: "3.8"
+services:
+  challenge:
+    build: ../challenge
+    ports:
+      - "4000:80"
+    environment:
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  community:
+    build: ../community
+    ports:
+      - "6000:80"
+    environment:
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  gateway:
+    build: ../gateway
+    ports:
+      - "5000:80"
+    environment:
+      - IDENTITY_SERVICE_URL=http://identity:80
+      - LEARN_SERVICE_URL=http://learn:80
+      - PORTAL_SERVICE_URL=http://portal:80
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  identity:
+    build: ../identity
+    ports:
+      - "7000:80"
+    environment:
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  learn:
+    build: ../learn
+    ports:
+      - "8000:80"
+    environment:
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  portal:
+    build: ../portal
+    ports:
+      - "8080:80"
+    environment:
+      - DATABASE_URL=${POSTGRES_URL}
+    networks:
+      - app-network
+  postgres:
+    image: postgres:16-alpine
+    restart: always
+    ports:
+      - "${HOST_PORT_DB}:5432"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "${HOST_PORT_PGADMIN}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@local.test
+      PGADMIN_DEFAULT_PASSWORD: password123
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
