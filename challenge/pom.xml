@@ -12,10 +12,10 @@
     </parent>
 
     <groupId>com.cyberclub</groupId>
-    <artifactId>challange</artifactId>
+    <artifactId>challenge</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>challange</name>
-    <description>ChallangeService</description>
+    <name>challenge</name>
+    <description>ChallengeService</description>
 
     <properties>
         <java.version>17</java.version>

@@ -1,0 +1,14 @@
+rename: application-docker.properties -- spring profiles should be conditional not hardcoded.
+refactor: add defaults for invironment variables in application.properties
+refactor: Validate required environment variables and provide clear startup feedback.
+
+    The configuration relies on DATABASE_URL, POSTGRES_USER, and POSTGRES_PASSWORD environment variables being supplied at runtime. If any are missing, Spring will fail to start with a generic property resolution error that may not clearly indicate the root cause.
+
+    Consider:
+
+    Adding validation annotations or a configuration properties class to enforce these are present at startup.
+    Documenting the required environment variables with their expected format and values.
+    Providing clear error messages if validation fails.
+    Example approach: Create a configuration class with @ConfigurationProperties and @Validated that explicitly declares these required properties and fails fast with clear messaging if missing.
+
+refartor: Docker file mvnw needs to be executable chmod +x
