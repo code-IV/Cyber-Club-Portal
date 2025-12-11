@@ -2,12 +2,14 @@
 FROM maven:3.9.5-eclipse-temurin-17 AS builder
 WORKDIR /app
 COPY pom.xml .
+COPY mvnw .
+COPY .mvn .mvn
 COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
 #Run
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/challenge-0.0.1-SNAPSHOT.jar ./challenge.jar
+COPY --from=builder /app/target/*.jar /app/challenge.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "challenge.jar"]
