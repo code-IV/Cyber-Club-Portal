@@ -1,5 +1,5 @@
 rename: application-docker.properties -- spring profiles should be conditional not hardcoded.
-refactor: add defaults for invironment variables in application.properties
+refactor: add defaults for environment variables in application.properties
 refactor: Validate required environment variables and provide clear startup feedback.
 
     The configuration relies on DATABASE_URL, POSTGRES_USER, and POSTGRES_PASSWORD environment variables being supplied at runtime. If any are missing, Spring will fail to start with a generic property resolution error that may not clearly indicate the root cause.

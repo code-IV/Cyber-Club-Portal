@@ -46,6 +46,9 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
   learn:
     build: learn
     ports:
@@ -79,6 +82,11 @@ services:
       - POSTGRES_DB=${POSTGRES_DB}
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
   pgadmin:
     image: dpage/pgadmin4
     ports:
