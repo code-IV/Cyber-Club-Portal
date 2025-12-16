@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-ChallengeServiceApplication<challenge>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.cyberclub.challenge.ChallengeServiceApplication",
+      "projectName": "challenge",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}
