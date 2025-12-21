@@ -1,20 +1,26 @@
 package com.cyberclub.challenge.config;
 
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
-
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-import com.cyberclub.challenge.tenancy.TenantFilter;
 import com.cyberclub.challenge.security.JWTfilter;
+import com.cyberclub.challenge.tenancy.TenantFilter;
+import com.cyberclub.challenge.tenancy.TenantResolver;
 
-
-@Configuration
-public class UserConfig {
+@SpringBootApplication(scanBasePackages = {
+    "com.cyberclub.challenge"
+})
+public class ContextTest {
 
     @Bean
-    public FilterRegistrationBean<JWTfilter> jwtFilterRegistration(JWTfilter jwtFilter) {
+    public TenantResolver tenantResolver(){
+        return new TenantResolver();
+    }
+
+    @Bean
+    public FilterRegistrationBean<JWTfilter> jwtFilterTest(JWTfilter jwtFilter) {
         FilterRegistrationBean<JWTfilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(jwtFilter);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
@@ -22,10 +28,11 @@ public class UserConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(TenantFilter tenantFilter) {
+    public FilterRegistrationBean<TenantFilter> tenantFilterTest(TenantFilter tenantFilter) {
         FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(tenantFilter);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         return registration;
     }
+    
 }

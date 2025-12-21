@@ -1,20 +1,18 @@
 package com.cyberclub.challenge.security;
 
 import com.cyberclub.challenge.context.UserContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Map;
 
+@Component
 public class JWTfilter extends OncePerRequestFilter {
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
     protected void doFilterInternal(
@@ -24,9 +22,8 @@ public class JWTfilter extends OncePerRequestFilter {
     )throws ServletException, IOException{
 
         try{
-            String token = extractToken(request);
-            if(token != null){
-                String userId = extractUserId(token);
+            String userId = extractToken(request);
+            if(userId != null){
                 UserContext.setUserId(userId);
             }
 
@@ -38,33 +35,13 @@ public class JWTfilter extends OncePerRequestFilter {
 
     private String extractToken(HttpServletRequest request){
 
-        String auth = request.getHeader("Authorization");
-        if(auth == null || !auth.startsWith("Bearer ")){
+        String auth = request.getHeader("X-User-Id");
+        if(auth == null || auth.isBlank()){
             return null;
         }
 
-        return auth.substring(7);
+        return auth;
 
-    }
-
-    @SuppressWarnings("unchecked")
-    private String extractUserId(String token)throws IOException{
-        String[] parts = token.split("\\.");
-
-        if(parts.length != 3){
-            throw new IllegalStateException("malformed token");
-        }
-
-        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
-
-        Map<String, Object> claims = objectMapper.readValue(payloadJson, Map.class);
-
-        Object sub = claims.get("sub");
-        if(sub == null){
-            throw new IllegalStateException("missing sub");
-        }
-
-        return sub.toString();
     }
     
 }

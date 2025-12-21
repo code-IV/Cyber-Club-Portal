@@ -46,7 +46,7 @@ public class TenantDataSource extends DelegatingDataSource {
 
     private void applySchema(Connection connection) throws SQLException{
         if(!TenantContext.isSet()){
-            throw new IllegalStateException("JDBC access without tenant context");
+            throw new IllegalStateException("TenantContext must be set before accessing tenant data source");
         }
 
         String tenant = TenantContext.get();

@@ -1,4 +1,4 @@
-package com.cyberclub.challenge.tenancy;
+package com.cyberclub.gateway.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -6,15 +6,17 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import com.cyberclub.challenge.context.TenantContext;
 
 import java.io.IOException;
+import java.nio.channels.IllegalSelectorException;
 
-// import org.springframework.core.annotation.Order;
+import com.cyberclub.gateway.tenancy.TenantResolver;
 
 @Component
+@Order(1)
 public class TenantFilter extends OncePerRequestFilter  {
     
     private final TenantResolver tenantResolver;
@@ -31,16 +33,17 @@ public class TenantFilter extends OncePerRequestFilter  {
     ) throws ServletException, IOException {
 
         try {
-            String tenantId = tenantResolver.resolve(request);
-            TenantContext.set(tenantId);
+            String tenantId = tenantResolver.resolveTenant(request);
+            request.setAttribute("tenantId", tenantId);
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
-        }catch (IllegalArgumentException ex){
+        } catch (IllegalSelectorException ex){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "tenant resolution failed");
             return;
+        } catch (IllegalArgumentException ex) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         } finally {
-            TenantContext.clear();
         }
 
     }
