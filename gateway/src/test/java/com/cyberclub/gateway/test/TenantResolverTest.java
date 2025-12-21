@@ -3,6 +3,7 @@ package com.cyberclub.gateway.test;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 import com.cyberclub.gateway.tenancy.TenantResolver;
 
@@ -35,5 +36,37 @@ class TenantResolverTest {
     void rejectsInvalidTenant() {
         HttpServletRequest req = mockReq("bad!!.domain.com", null);
         assertThrows(IllegalArgumentException.class, () -> resolver.resolveTenant(req));
+    }
+
+    @Test
+    void ignoresIpAddressHost() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Host", "127.0.0.1");
+
+        assertThrows(
+            IllegalStateException.class,
+            () -> resolver.resolveTenant(request)
+        );
+    }
+
+    @Test
+    void ignoresPortInHostHeader() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Host", "tenantA.example.com:8080");
+
+        String tenant = resolver.resolveTenant(request);
+
+        assertEquals("tenanta", tenant);
+    }
+
+    @Test
+    void TenantCannotBeResolved() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.addHeader("Host", "localhost");
+
+        assertThrows(
+            IllegalStateException.class,
+            () -> resolver.resolveTenant(request)
+        );
     }
 }
