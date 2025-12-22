@@ -5,9 +5,8 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
 
-import com.cyberclub.challenge.security.JWTfilter;
-import com.cyberclub.challenge.tenancy.TenantFilter;
-import com.cyberclub.challenge.tenancy.TenantResolver;
+import com.cyberclub.challenge.filters.*;
+
 
 @SpringBootApplication(scanBasePackages = {
     "com.cyberclub.challenge"
@@ -15,13 +14,8 @@ import com.cyberclub.challenge.tenancy.TenantResolver;
 public class ContextTest {
 
     @Bean
-    public TenantResolver tenantResolver(){
-        return new TenantResolver();
-    }
-
-    @Bean
-    public FilterRegistrationBean<JWTfilter> jwtFilterTest(JWTfilter jwtFilter) {
-        FilterRegistrationBean<JWTfilter> registration = new FilterRegistrationBean<>();
+    public FilterRegistrationBean<JwtFilter> jwtFilterTest(JwtFilter jwtFilter) {
+        FilterRegistrationBean<JwtFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(jwtFilter);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;

@@ -16,7 +16,7 @@ public class ControllerTest {
     @GetMapping("/test/context")
     public ResponseEntity<Map<String, String>> getContext() {
 
-        if (!UserContext.isSetUserId()) {
+        if (!UserContext.isSet()) {
         return ResponseEntity.status(401)
                 .body(Map.of("error", "no user in context"));
     }
@@ -24,7 +24,7 @@ public class ControllerTest {
         return ResponseEntity.ok(
             Map.of(
             "tenant", TenantContext.get(),
-            "userId", UserContext.getUserId()
+            "userId", UserContext.get()
         ));
     }
     

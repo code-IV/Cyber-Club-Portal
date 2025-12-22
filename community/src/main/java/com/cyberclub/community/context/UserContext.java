@@ -1,21 +1,19 @@
-package com.cyberclub.challenge.context;
+package com.cyberclub.community.context;
 
-public final class UserContext {  
-    
+public class UserContext {
     private static final ThreadLocal<String> CURRENT_USER_ID = new ThreadLocal<>();
 
-    private UserContext(){};
+    private UserContext(){}
 
-    public static void set(String userId) {
+    public static void set(String userId){
         CURRENT_USER_ID.set(userId);
     }
 
     public static String get(){
         String userId = CURRENT_USER_ID.get();
         if(userId == null){
-            throw new IllegalStateException("no user in context");
+            throw new IllegalStateException("No User in context");
         }
-
         return userId;
     }
 
@@ -26,6 +24,5 @@ public final class UserContext {
     public static void clear(){
         CURRENT_USER_ID.remove();
     }
-
-
+    
 }

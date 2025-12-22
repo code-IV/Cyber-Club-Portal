@@ -1,24 +1,24 @@
-package com.cyberclub.challenge.tenancy;
+package com.cyberclub.identity.tenancy;
 
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
-import org.springframework.jdbc.datasource.DelegatingDataSource;
-
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.cyberclub.challenge.context.TenantContext;
+import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.datasource.DelegatingDataSource;
+
+import com.cyberclub.identity.context.TenantContext;
 
 public class TenantDataSource extends DelegatingDataSource {
-
+    
     public TenantDataSource(DataSource targetSource){
         super(targetSource);
     }
 
-    private static final Logger log =
-    LoggerFactory.getLogger(TenantDataSource.class);
+    private static final Logger log = LoggerFactory.getLogger(TenantDataSource.class);
 
     @Override
     public Connection getConnection() throws SQLException{
@@ -46,17 +46,15 @@ public class TenantDataSource extends DelegatingDataSource {
 
     private void applySchema(Connection connection) throws SQLException{
         if(!TenantContext.isSet()){
-            return;
+            throw new IllegalStateException("Tenant Context must be set before accessing datasource");
         }
 
         String tenant = TenantContext.get();
         String schema = "tenant_" + tenant;
-
+        
         log.debug("Setting search_path to schema [{}]", schema);
-        try (Statement stmt = connection.createStatement()){
-            stmt.execute("SET search_path TO \"" + schema + "\", public");
+        try(Statement stmt = connection.createStatement()){
+            stmt.execute("SET search_path To \" " + schema + "\", public");
         }
-
     }
-    
 }

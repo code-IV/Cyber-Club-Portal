@@ -1,18 +1,19 @@
-package com.cyberclub.challenge.security;
+package com.cyberclub.portal.filters;
 
-import com.cyberclub.challenge.context.UserContext;
+import java.io.IOException;
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import com.cyberclub.portal.context.UserContext;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.stereotype.Component;
-import org.springframework.web.filter.OncePerRequestFilter;
-
-import java.io.IOException;
-
 @Component
-public class JWTfilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
@@ -20,28 +21,23 @@ public class JWTfilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     )throws ServletException, IOException{
-
         try{
             String userId = extractToken(request);
             if(userId != null){
-                UserContext.setUserId(userId);
+                UserContext.set(userId);
             }
-
             filterChain.doFilter(request, response);
-        }finally{
+        } finally {
             UserContext.clear();
         }
     }
 
     private String extractToken(HttpServletRequest request){
-
-        String auth = request.getHeader("X-User-Id");
-        if(auth == null || auth.isBlank()){
+        String userId = request.getHeader("X-User-Id");
+        if(userId == null || userId.isBlank()){
             return null;
         }
-
-        return auth;
-
+        return userId;
     }
-    
+
 }

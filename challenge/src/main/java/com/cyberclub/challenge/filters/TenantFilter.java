@@ -1,4 +1,4 @@
-package com.cyberclub.challenge.tenancy;
+package com.cyberclub.challenge.filters;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -16,12 +16,6 @@ import java.io.IOException;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter  {
-    
-    private final TenantResolver tenantResolver;
-
-    public TenantFilter(TenantResolver tenantResolver){
-        this.tenantResolver = tenantResolver;
-    }
 
     @Override
     protected void doFilterInternal(
@@ -31,7 +25,7 @@ public class TenantFilter extends OncePerRequestFilter  {
     ) throws ServletException, IOException {
 
         try {
-            String tenantId = tenantResolver.resolve(request);
+            String tenantId = resolve(request);
             TenantContext.set(tenantId);
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex) {
@@ -43,6 +37,14 @@ public class TenantFilter extends OncePerRequestFilter  {
             TenantContext.clear();
         }
 
+    }
+
+    private String resolve(HttpServletRequest request){
+        String tenant = request.getHeader("X-Tenant-Id");
+        if(tenant == null || tenant.isBlank()){
+            throw new IllegalStateException("Missing Tenant");
+        }
+        return tenant;
     }
 
 }
