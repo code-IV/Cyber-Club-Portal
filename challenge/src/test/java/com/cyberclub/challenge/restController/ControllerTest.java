@@ -24,7 +24,7 @@ public class ControllerTest {
         return ResponseEntity.ok(
             Map.of(
             "tenant", TenantContext.get(),
-            "userId", UserContext.get()
+            "userId", UserContext.getId().toString()
         ));
     }
     

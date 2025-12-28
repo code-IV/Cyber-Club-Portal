@@ -9,13 +9,22 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.stereotype.Component;
 
 import com.cyberclub.challenge.context.TenantContext;
+import com.cyberclub.challenge.context.UserContext;
+import com.cyberclub.challenge.security.ClientIdentity;
 
 import java.io.IOException;
+import java.util.UUID;
 
 // import org.springframework.core.annotation.Order;
 
 @Component
 public class TenantFilter extends OncePerRequestFilter  {
+
+    private final ClientIdentity clientIdentity;
+
+    public TenantFilter(ClientIdentity clientIdentity){
+        this.clientIdentity = clientIdentity;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -25,8 +34,23 @@ public class TenantFilter extends OncePerRequestFilter  {
     ) throws ServletException, IOException {
 
         try {
-            String tenantId = resolve(request);
-            TenantContext.set(tenantId);
+            String tenantKey = resolve(request);
+            UUID userId = UserContext.getId();
+
+            if(tenantKey == null || userId == null){
+                ((HttpServletResponse) response).setStatus(401);
+                return;
+            }
+
+            var result = clientIdentity.checkMembership(userId, tenantKey);
+
+            if(result == null || !result.allowed){
+                ((HttpServletResponse) response).setStatus(403);
+                return;
+            }
+
+            UserContext.setRole(result.role);
+            TenantContext.set(tenantKey);
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());

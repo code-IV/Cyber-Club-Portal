@@ -1,3 +1,4 @@
+-- infra/migrations/identity/V1__init_identity_schema.sql
 -- Create the identity schema if it doesn't exist. 
 CREATE SCHEMA IF NOT EXISTS identity;
 
@@ -8,7 +9,8 @@ SET search_path TO identity;
 CREATE TABLE users (
     id UUID PRIMARY KEY,
     email VARCHAR(255) NOT NULL UNIQUE,
-    created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    username        VARCHAR(255),
+    created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
 -- You may also want to add indexes for performance

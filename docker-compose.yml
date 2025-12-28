@@ -1,8 +1,9 @@
 services:
   challenge:
+    container_name: challenge
     build: challenge
     ports:
-      - "4000:8080"
+      - "9001:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -13,7 +14,29 @@ services:
   community:
     build: community
     ports:
-      - "6000:8080"
+      - "9002:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - app-network
+  learn:
+    build: learn
+    ports:
+      - "9004:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - DATABASE_URL=${POSTGRES_URL}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - app-network
+  portal:
+    build: portal
+    ports:
+      - "9005:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -24,7 +47,7 @@ services:
   gateway:
     build: gateway
     ports:
-      - "5000:8080"
+      - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - IDENTITY_SERVICE_URL=http://identity:80
@@ -38,9 +61,10 @@ services:
     networks:
       - app-network
   identity:
+    container_name: identity
     build: identity
     ports:
-      - "7000:8080"
+      - "8082:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -51,26 +75,18 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-  learn:
-    build: learn
-    ports:
-      - "8000:8080"
+  flyway:
+    image: flyway/flyway:11
+    command: migrate
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - DATABASE_URL=${POSTGRES_URL}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    networks:
-      - app-network
-  portal:
-    build: portal
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      - DATABASE_URL=${POSTGRES_URL}
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infra/migrations/identity:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
   postgres:
@@ -94,7 +110,7 @@ services:
   pgadmin:
     image: dpage/pgadmin4
     ports:
-      - "8081:8081"
+      - "8081:80"
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
