@@ -7,5 +7,5 @@ public record UserRecord (
     UUID id,
     String username,
     String email,
-    LocalDateTime createdAt
+    LocalDateTime created_at
 ) {}

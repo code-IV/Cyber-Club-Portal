@@ -12,9 +12,9 @@ public final class UserContext {
         CURRENT_USER_ID.set(userId.toString());
     }
 
-    public static void setRole(String role){
-        CURRENT_USER_ID.set(role);
-    }
+    // public static void setRole(String role){
+    //     CURRENT_USER_ID.set(role);
+    // }
 
     public static UUID getId(){
         String userId = CURRENT_USER_ID.get();

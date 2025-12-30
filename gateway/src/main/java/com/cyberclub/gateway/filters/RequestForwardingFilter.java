@@ -24,6 +24,8 @@ public class RequestForwardingFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
+            System.out.println("forwarding doFilter internal");
+
 
         try {
             // Extract tenant

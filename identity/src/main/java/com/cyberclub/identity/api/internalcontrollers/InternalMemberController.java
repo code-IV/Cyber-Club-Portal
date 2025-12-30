@@ -27,6 +27,8 @@ public class InternalMemberController{
             return ResponseEntity.notFound().build();
         }
 
+        System.out.println(tenantKey + ": " + userId);
+
         return member
                 .findMembership(userId, tenantKey)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)

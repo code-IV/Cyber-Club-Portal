@@ -21,7 +21,9 @@ public class ProxyController {
 
     @RequestMapping("/**")
     public ResponseEntity<byte[]> proxy(HttpServletRequest request) throws IOException {
-        String downstreamUrl = "http://localhost:8081"; // example downstream service
+        String tenantKey = (String) request.getAttribute("tenantId");
+        String downstreamUrl = "http://"+ tenantKey+ ":8080"; // example downstream service
+        System.out.println(" gteway proxy controller === " + downstreamUrl);
         return forwardingService.forward(request, downstreamUrl);
     }
 }

@@ -40,6 +40,7 @@ public class Forward {
         headers.set("X-User-Id", (String) request.getAttribute("userId"));
         headers.set("X-Request-Id", UUID.randomUUID().toString());
 
+
         // Copy body
         InputStream inputStream = request.getInputStream();
         byte[] body = inputStream.readAllBytes();

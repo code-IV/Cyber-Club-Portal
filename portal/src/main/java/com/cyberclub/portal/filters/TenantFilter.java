@@ -27,6 +27,7 @@ public class TenantFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
+            return;
         } catch (IllegalArgumentException ex){
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "tenant resolution failed");
             return;

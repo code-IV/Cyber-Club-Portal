@@ -37,7 +37,7 @@ public class TenantFilter extends OncePerRequestFilter  {
             String tenantKey = resolve(request);
             UUID userId = UserContext.getId();
 
-            if(tenantKey == null || userId == null){
+            if(userId == null){
                 ((HttpServletResponse) response).setStatus(401);
                 return;
             }
@@ -49,7 +49,7 @@ public class TenantFilter extends OncePerRequestFilter  {
                 return;
             }
 
-            UserContext.setRole(result.role);
+            // UserContext.setRole(result.role);
             TenantContext.set(tenantKey);
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex) {

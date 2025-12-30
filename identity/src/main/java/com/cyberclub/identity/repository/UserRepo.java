@@ -23,7 +23,7 @@ public class UserRepo {
             UUID.fromString(rs.getString("id")),
             rs.getString("username"),
             rs.getString("email"),
-            rs.getTimestamp("createdAt").toLocalDateTime()
+            rs.getTimestamp("created_at").toLocalDateTime()
         );
 
     public Optional<UserRecord> findById (UUID id){

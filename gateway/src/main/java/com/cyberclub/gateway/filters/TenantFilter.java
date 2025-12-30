@@ -34,6 +34,7 @@ public class TenantFilter extends OncePerRequestFilter  {
 
         try {
             String tenantId = tenantResolver.resolveTenant(request);
+            System.out.println("gateway tenant filter === " + tenantId);
             request.setAttribute("tenantId", tenantId);
             filterChain.doFilter(request, response);
         } catch (IllegalStateException ex) {

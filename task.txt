@@ -12,3 +12,5 @@ refactor: Validate required environment variables and provide clear startup feed
     Example approach: Create a configuration class with @ConfigurationProperties and @Validated that explicitly declares these required properties and fails fast with clear messaging if missing.
 
 refartor: Docker file mvnw needs to be executable chmod +x
+refactor: Thread local clear inforcement
+refactor:webflux and starter-web conflicting

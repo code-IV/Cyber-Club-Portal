@@ -32,7 +32,7 @@ public class InternalController {
             @PathVariable String id) {
             
         UUID userId;
-        System.out.println(id);
+        
         try {
             userId = UUID.fromString(id);
         } catch (IllegalArgumentException e) {

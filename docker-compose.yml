@@ -12,6 +12,7 @@ services:
     networks:
       - app-network
   community:
+    container_name: community
     build: community
     ports:
       - "9002:8080"
@@ -23,6 +24,7 @@ services:
     networks:
       - app-network
   learn:
+    container_name: learn
     build: learn
     ports:
       - "9004:8080"
@@ -33,7 +35,11 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     networks:
       - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
   portal:
+    container_name: portal
     build: portal
     ports:
       - "9005:8080"
@@ -45,14 +51,15 @@ services:
     networks:
       - app-network
   gateway:
+    container_name: gateway
     build: gateway
     ports:
       - "8080:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - IDENTITY_SERVICE_URL=http://identity:80
-      - LEARN_SERVICE_URL=http://learn:80
-      - PORTAL_SERVICE_URL=http://portal:80
+      - IDENTITY_SERVICE_URL=http://identity:8080
+      - LEARN_SERVICE_URL=http://learn:8080
+      - PORTAL_SERVICE_URL=http://portal:8080
       - DATABASE_URL=${POSTGRES_URL}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}

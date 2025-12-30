@@ -25,18 +25,14 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
+        System.out.println("jwt doFilter internal");
 
         try {
             String token = extractToken(request);
 
-            String userId;
+            String userId = extractUserId(token);
+            System.out.println("gateway jwt filter: " + userId);
 
-            // Fake token for testing
-            if (token == null || "user-123".equals(token)) {
-                userId = "user-123";
-            } else {
-                userId = extractUserId(token);
-            }
 
             // Store userId in request context or a custom UserContext
             request.setAttribute("userId", userId);
@@ -51,7 +47,7 @@ public class JwtFilter extends OncePerRequestFilter {
     private String extractToken(HttpServletRequest request) {
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
-            return null;
+            throw new IllegalStateException("no user");
         }
         return auth.substring(7);
     }

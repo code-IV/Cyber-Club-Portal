@@ -26,9 +26,12 @@ public class TenantDataSource extends DelegatingDataSource{
         try {
             applySchema(connection);
             return connection;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             connection.close();
-            throw ex;
+            if (ex instanceof SQLException) {
+                throw (SQLException) ex;
+            }
+            throw new SQLException("Failed to apply tenant schema", ex);
         }
     }
 
@@ -38,9 +41,12 @@ public class TenantDataSource extends DelegatingDataSource{
         try{
             applySchema(connection);
             return connection;
-        } catch (SQLException ex){
+        } catch (Exception ex) {
             connection.close();
-            throw ex;
+            if (ex instanceof SQLException) {
+                throw (SQLException) ex;
+            }
+            throw new SQLException("Failed to apply tenant schema", ex);
         }
     }
 

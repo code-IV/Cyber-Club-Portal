@@ -21,8 +21,8 @@ public class TenantRepo {
     private final RowMapper<TenantRecord> mapper = (rs, rowNum) ->
         new TenantRecord(
             UUID.fromString(rs.getString("id")),
-            rs.getString("tenantKey"),
-            rs.getTimestamp("createdAt").toLocalDateTime()
+            rs.getString("tenant_key"),
+            rs.getTimestamp("created_at").toLocalDateTime()
         );
     
     public Optional<TenantRecord> findByKey (String tenantKey){
