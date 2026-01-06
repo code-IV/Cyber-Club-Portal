@@ -10,8 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 
-import com.cyberclub.learn.context.TenantContext;
-
 public class TenantDataSource extends DelegatingDataSource {
 
     public TenantDataSource ( DataSource targetSource){
@@ -51,12 +49,7 @@ public class TenantDataSource extends DelegatingDataSource {
     }
 
     private void applySchema(Connection connection) throws SQLException{
-        if(!TenantContext.isSet()){
-            throw new IllegalStateException("Tenant Context must be set before accessing data source");
-        }
-
-        String tenant = TenantContext.get();
-        String schema = "tenant_" + tenant;
+        String schema = "Service_" + "learn";
 
         log.debug("Setting search_path to schema [{}]" , schema);
         try(Statement stmt = connection.createStatement()){

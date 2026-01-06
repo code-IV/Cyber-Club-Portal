@@ -24,25 +24,25 @@ public class MembershipRepo {
             rs.getString("role")
         );
 
-    public Optional<IsMemberResponse> findMembership(UUID id, String tenantKey){
+    public Optional<IsMemberResponse> findMembership(UUID id, String serviceName){
         var sql = """
                 SELECT m.role FROM identity.memberships m
-                JOIN identity.tenants t ON m.tenant_id = t.id
-                WHERE m.user_id = ? AND t.tenant_key = ?
+                JOIN identity.services s ON m.service_id = s.id
+                WHERE m.user_id = ? AND s.service_name = ?
                 """;
 
         return jdbcTemplate
-                .query(sql, mapper, id, tenantKey)
+                .query(sql, mapper, id, serviceName)
                 .stream()
                 .findFirst();
     }
 
-    public boolean tenantExists (String tenantKey){
+    public boolean serviceExists (String serviceName){
         var sql = """
-                SELECT COUNT(*) FROM identity.tenants WHERE tenant_key = ?
+                SELECT COUNT(*) FROM identity.services WHERE service_name = ?
                 """;
 
-        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, tenantKey);
+        Integer count = jdbcTemplate.queryForObject(sql, Integer.class, serviceName);
         return count != null && count > 0;
     }
 }

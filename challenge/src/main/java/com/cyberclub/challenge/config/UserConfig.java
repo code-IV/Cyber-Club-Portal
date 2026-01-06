@@ -19,12 +19,4 @@ public class UserConfig {
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }
-
-    @Bean
-    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(TenantFilter tenantFilter) {
-        FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(tenantFilter);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
-        return registration;
-    }
 }

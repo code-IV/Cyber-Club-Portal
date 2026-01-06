@@ -9,8 +9,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.cyberclub.challenge.context.TenantContext;
-
 public class TenantDataSource extends DelegatingDataSource {
 
     public TenantDataSource(DataSource targetSource){
@@ -45,12 +43,12 @@ public class TenantDataSource extends DelegatingDataSource {
     }
 
     private void applySchema(Connection connection) throws SQLException{
-        if(!TenantContext.isSet()){
-            return;
-        }
+        // if(!TenantContext.isSet()){
+        //     return;
+        // }
 
-        String tenant = TenantContext.get();
-        String schema = "tenant_" + tenant;
+        // String tenant = TenantContext.get();
+        String schema = "challenge";
 
         log.debug("Setting search_path to schema [{}]", schema);
         try (Statement stmt = connection.createStatement()){

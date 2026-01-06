@@ -1,60 +1,66 @@
 package com.cyberclub.gateway;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.UUID;
-
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.client.RestClientException;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import reactor.core.publisher.Mono;
 
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.UUID;
 
 @Component
 public class Forward {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final WebClient webClient = WebClient.builder()
+            // Set a higher limit for memory buffer if you expect large payloads
+            .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024)) 
+            .build();
 
     public ResponseEntity<byte[]> forward(HttpServletRequest request, String downstreamUrl) throws IOException {
-        // Build the URL including path and query params
+        
+        // 1. Construct the full URL
         String url = downstreamUrl + request.getRequestURI();
         if (request.getQueryString() != null) {
             url += "?" + request.getQueryString();
         }
 
-        // Copy headers
+        // 2. Map Incoming Headers to WebClient Headers
         HttpHeaders headers = new HttpHeaders();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String name = headerNames.nextElement();
-            headers.add(name, request.getHeader(name));
-        }
+        Collections.list(request.getHeaderNames()).forEach(name -> 
+            headers.add(name, request.getHeader(name))
+        );
 
-        // Ensure enriched headers exist
-        headers.set("X-Tenant-Id", (String) request.getAttribute("tenantId"));
+        // 3. Add Enrichment Headers
+        headers.set("X-Service-Name", (String) request.getAttribute("serviceName"));
         headers.set("X-User-Id", (String) request.getAttribute("userId"));
         headers.set("X-Request-Id", UUID.randomUUID().toString());
 
+        // 4. Read the Body
+        byte[] body = request.getInputStream().readAllBytes();
 
-        // Copy body
-        InputStream inputStream = request.getInputStream();
-        byte[] body = inputStream.readAllBytes();
+        // 5. Execute Request and block to return ResponseEntity
+        // (Note: Since your controller returns ResponseEntity<byte[]>, we use .block() here)
+        return webClient.method(HttpMethod.valueOf(request.getMethod()))
+                .uri(url)
+                .headers(h -> h.addAll(headers))
+                .bodyValue(body)
+                .exchangeToMono(this::handleResponse)
+                .block(); 
+    }
 
-        HttpMethod method = HttpMethod.valueOf(request.getMethod());
-        HttpEntity<byte[]> httpEntity = new HttpEntity<>(body, headers);
-
-
-        // Send request
-        try {
-            return restTemplate.exchange(url, method, httpEntity, byte[].class);
-        } catch (RestClientException e) {
-            // Log the error with request context
-            throw new RuntimeException("Failed to forward request to " + downstreamUrl, e);
-        }
+    private Mono<ResponseEntity<byte[]>> handleResponse(ClientResponse clientResponse) {
+        return clientResponse.bodyToMono(byte[].class)
+                .defaultIfEmpty(new byte[0])
+                .map(body -> ResponseEntity
+                        .status(clientResponse.statusCode())
+                        .headers(clientResponse.headers().asHttpHeaders())
+                        .body(body)
+                );
     }
 }

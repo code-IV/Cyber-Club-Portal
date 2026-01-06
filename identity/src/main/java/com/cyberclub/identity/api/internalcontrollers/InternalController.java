@@ -3,7 +3,7 @@ package com.cyberclub.identity.api.internalcontrollers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.cyberclub.identity.repository.TenantRepo;
+import com.cyberclub.identity.repository.ServiceRepo;
 import com.cyberclub.identity.repository.UserRepo;
 
 import java.util.HashMap;
@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class InternalController {
     
     private final UserRepo userRepo;
-    private final TenantRepo tenantRepo;
+    private final ServiceRepo serviceRepo;
 
-    public InternalController (TenantRepo tenantRepo, UserRepo userRepo){
-        this.tenantRepo = tenantRepo;
+    public InternalController (ServiceRepo serviceRepo, UserRepo userRepo){
+        this.serviceRepo = serviceRepo;
         this.userRepo  = userRepo;
     }
 
-    @GetMapping("/{tenantKey}/{id}")
-    public ResponseEntity<Map<String, Object>> getTenantAndUser(
-            @PathVariable String tenantKey,
+    @GetMapping("/{serviceName}/{id}")
+    public ResponseEntity<Map<String, Object>> getServiceAndUser(
+            @PathVariable String serviceName,
             @PathVariable String id) {
             
         UUID userId;
@@ -39,10 +39,10 @@ public class InternalController {
             return ResponseEntity.badRequest().build();
         }
 
-        return tenantRepo.findByKey(tenantKey).flatMap(tenant ->
+        return serviceRepo.findByName(serviceName).flatMap(service ->
             userRepo.findById(userId).map(user -> {
                 Map<String, Object> response = new HashMap<>();
-                response.put("tenant", tenant);
+                response.put("service", service);
                 response.put("user", user);
                 return ResponseEntity.ok(response);
             })

@@ -22,15 +22,13 @@ public class InternalMemberController{
     }
 
     @GetMapping("/member/check")
-    public ResponseEntity<?> checkMembership(@RequestParam UUID userId, @RequestParam String tenantKey){
-        if(!member.tenantExists(tenantKey)){
+    public ResponseEntity<?> checkMembership(@RequestParam UUID userId, @RequestParam String serviceName){
+        if(!member.serviceExists(serviceName)){
             return ResponseEntity.notFound().build();
         }
 
-        System.out.println(tenantKey + ": " + userId);
-
         return member
-                .findMembership(userId, tenantKey)
+                .findMembership(userId, serviceName)
                 .<ResponseEntity<?>>map(ResponseEntity::ok)
                 .orElseGet(() -> 
                     ResponseEntity.status(403)

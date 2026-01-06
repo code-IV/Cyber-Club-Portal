@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 
 import com.cyberclub.learn.filters.JwtFilter;
-import com.cyberclub.learn.filters.TenantFilter;
 
 @Configuration
 public class UserConfig {
@@ -19,11 +18,4 @@ public class UserConfig {
         return registration;
     }
 
-    @Bean
-    public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(TenantFilter tenantFilter){
-        FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-        registration.setFilter(tenantFilter);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
-        return registration;
-    }
 }
