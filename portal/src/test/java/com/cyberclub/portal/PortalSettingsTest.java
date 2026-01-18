@@ -111,6 +111,6 @@ public class PortalSettingsTest {
         )
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.error").value("INTERNAL_ERROR"))
-        .andExpect(jsonPath("$.message").value("Service UnAvailable"));
+        .andExpect(jsonPath("$.message").value("internal server error"));
     }    
 }

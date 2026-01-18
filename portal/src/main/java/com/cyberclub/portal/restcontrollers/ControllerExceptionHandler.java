@@ -17,12 +17,20 @@ import com.cyberclub.portal.context.TraceContext;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @RestControllerAdvice
 public class ControllerExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(ControllerExceptionHandler.class);
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(Exception ex, HttpServletRequest req){
+        log.error("[{}] Unhandled exception at {}: {}", 
+            TraceContext.getCorrelationId(), req.getRequestURI(), ex.getMessage());
+
         return new ErrorResponse(
             "INTERNAL_ERROR",
             "internal server error",
@@ -83,6 +91,9 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     public ErrorResponse handleDataAccess(DataAccessException ex, HttpServletRequest req){
+        log.error("[{}] Database error at {}: {}", 
+            TraceContext.getCorrelationId(), req.getRequestURI(), ex.getMessage(), ex);
+            
         return new ErrorResponse(
             "SERVICE_UNAVAILABLE",
             "database is not available",
