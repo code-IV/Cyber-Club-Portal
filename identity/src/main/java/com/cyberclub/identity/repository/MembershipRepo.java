@@ -2,6 +2,7 @@ package com.cyberclub.identity.repository;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -17,6 +18,23 @@ public class MembershipRepo {
     public MembershipRepo(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    public void createDefaultMembership(UUID userId) {
+        // 1. Get all service IDs
+        List<UUID> serviceIds = jdbcTemplate.query(
+            "SELECT id FROM identity.services", 
+            (rs, rowNum) -> UUID.fromString(rs.getString("id"))
+        );
+
+        // 2. Batch insert using the logic from our previous step
+        var sql = "INSERT INTO identity.memberships (id, user_id, service_id, role) VALUES (?, ?, ?, 'USER')";
+        
+        List<Object[]> batchArgs = serviceIds.stream()
+            .map(sId -> new Object[] { UUID.randomUUID(), userId, sId })
+            .toList();
+
+        jdbcTemplate.batchUpdate(sql, batchArgs);
+}
 
     private final RowMapper<IsMemberResponse> mapper = (rs, n) ->
         new IsMemberResponse(

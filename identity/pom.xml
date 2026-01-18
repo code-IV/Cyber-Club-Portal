@@ -72,7 +72,6 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
-
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>

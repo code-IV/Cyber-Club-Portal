@@ -9,6 +9,7 @@ import com.cyberclub.identity.api.dtos.UserRegRequest;
 import com.cyberclub.identity.api.dtos.UserLoginRequest;
 import com.cyberclub.identity.services.UserRegService;
 import com.cyberclub.identity.services.JwtTokenService;
+import com.cyberclub.identity.services.MembershipService;
 import com.cyberclub.identity.config.JwtProperties;
 
 
@@ -23,11 +24,13 @@ import jakarta.validation.Valid;
 public class UserRegController {
 
     private final UserRegService regService;
+    private final MembershipService membershipService;
     private final JwtTokenService tokenService;
     private final JwtProperties properties;
 
-    public UserRegController(UserRegService regService, JwtTokenService tokenService, JwtProperties properties){
+    public UserRegController(UserRegService regService, MembershipService membershipService, JwtTokenService tokenService, JwtProperties properties){
         this.regService = regService;
+        this.membershipService = membershipService;
         this.tokenService = tokenService;
         this.properties = properties;
     }
@@ -40,6 +43,7 @@ public class UserRegController {
             req.email(),
             req.password()
         );
+        membershipService.saveMembership(user.id());
         String token = tokenService.generate(user);
 
         return new UserResponse(

@@ -8,8 +8,9 @@ SET search_path TO identity;
 -- Create the users table
 CREATE TABLE users (
     id UUID PRIMARY KEY,
-    email VARCHAR(255) NOT NULL UNIQUE,
     username        VARCHAR(255),
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 

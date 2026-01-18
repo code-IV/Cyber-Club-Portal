@@ -1,23 +1,36 @@
 package com.cyberclub.gateway.filters;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.cyberclub.gateway.config.JwtProperties;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Map;
+import java.nio.charset.StandardCharsets;
+
+import javax.crypto.SecretKey;
 
 @Component
 @Order(2)
 public class JwtFilter extends OncePerRequestFilter {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final SecretKey key;
+    private final JwtProperties properties;
+
+    public JwtFilter(JwtProperties properties){
+        this.properties = properties;
+        this.key = Keys.hmacShaKeyFor(properties.secret().getBytes(StandardCharsets.UTF_8));
+    }
 
     @Override
     protected void doFilterInternal(
@@ -25,49 +38,40 @@ public class JwtFilter extends OncePerRequestFilter {
         HttpServletResponse response,
         FilterChain filterChain
     ) throws ServletException, IOException {
-        System.out.println("jwt doFilter internal");
 
         try {
             String token = extractToken(request);
 
-            String userId = extractUserId(token);
-            System.out.println("gateway jwt filter: " + userId);
-
+            Claims claims = validateClaims(token);
 
             // Store userId in request context or a custom UserContext
-            request.setAttribute("userId", userId);
+            request.setAttribute("userId", claims.getSubject());
+            request.setAttribute("email", claims.get("email", String.class));
 
             filterChain.doFilter(request, response);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } finally {
             // Clear context if you use a thread-local UserContext
             request.removeAttribute("userId");
         }
     }
 
+    public Claims validateClaims(String token){
+        return Jwts.parserBuilder()
+                .requireIssuer(properties.issuer())
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
     private String extractToken(HttpServletRequest request) {
         String auth = request.getHeader("Authorization");
         if (auth == null || !auth.startsWith("Bearer ")) {
-            throw new IllegalStateException("no user");
+            throw new IllegalStateException("absent token");
         }
         return auth.substring(7);
-    }
-
-    @SuppressWarnings("unchecked")
-    private String extractUserId(String token) throws IOException {
-        String[] parts = token.split("\\.");
-
-        if (parts.length != 3) {
-            throw new IllegalStateException("malformed token");
-        }
-
-        String payloadJson = new String(Base64.getUrlDecoder().decode(parts[1]));
-        Map<String, Object> claims = objectMapper.readValue(payloadJson, Map.class);
-
-        Object sub = claims.get("sub");
-        if (sub == null) {
-            throw new IllegalStateException("missing sub");
-        }
-
-        return sub.toString();
     }
 }
