@@ -20,11 +20,11 @@ public class UserConfig {
         return registration;
     }
 
-    // @Bean
-    // public FilterRegistrationBean<TenantFilter> tenantFilterRegistration(TenantFilter tenantFilter) {
-    //     FilterRegistrationBean<TenantFilter> registration = new FilterRegistrationBean<>();
-    //     registration.setFilter(tenantFilter);
-    //     registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
-    //     return registration;
-    // }
+    @Bean
+    public FilterRegistrationBean<GatewayTrustFilter> tenantFilterRegistration(GatewayTrustFilter gatewayFilter) {
+        FilterRegistrationBean<GatewayTrustFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(gatewayFilter);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        return registration;
+    }
 }

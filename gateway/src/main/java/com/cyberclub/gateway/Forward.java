@@ -1,5 +1,6 @@
 package com.cyberclub.gateway;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
@@ -11,15 +12,21 @@ import reactor.core.publisher.Mono;
 import jakarta.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.UUID;
 
 @Component
 public class Forward {
 
+    private final String internalAuthSecret;
     private final WebClient webClient = WebClient.builder()
             // Set a higher limit for memory buffer if you expect large payloads
             .codecs(configurer -> configurer.defaultCodecs().maxInMemorySize(2 * 1024 * 1024)) 
             .build();
+
+    public Forward(@Value("${INTERNAL_GATEWAY_SECRET}") String internalAuthSecret) {
+        this.internalAuthSecret = Objects.requireNonNull(internalAuthSecret, "INTERNAL_GATEWAY_SECRET must be configured");
+    }
 
     public ResponseEntity<byte[]> forward(HttpServletRequest request, String downstreamUrl) throws IOException {
         
@@ -36,6 +43,7 @@ public class Forward {
         );
 
         // 3. Add Enrichment Headers
+        headers.set("X-Internal-Auth", internalAuthSecret);
         headers.set("X-Service-Name", (String) request.getAttribute("serviceName"));
         headers.set("X-User-Id", (String) request.getAttribute("userId"));
         headers.set("X-Request-Id", UUID.randomUUID().toString());

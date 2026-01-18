@@ -48,6 +48,7 @@ services:
       - DATABASE_URL=${POSTGRES_URL}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - INTERNAL_GATEWAY_SECRET=${INTERNAL_GATEWAY_SECRET}
     networks:
       - app-network
   gateway:
@@ -60,6 +61,7 @@ services:
       - IDENTITY_SERVICE_URL=http://identity:8080
       - LEARN_SERVICE_URL=http://learn:8080
       - PORTAL_SERVICE_URL=http://portal:8080
+      - INTERNAL_GATEWAY_SECRET=${INTERNAL_GATEWAY_SECRET}
       - JWT_SECRET=${JWT_SECRET}
       - DATABASE_URL=${POSTGRES_URL}
       - POSTGRES_USER=${POSTGRES_USER}
@@ -85,6 +87,7 @@ services:
       postgres:
         condition: service_healthy
   flyway:
+    container_name: flyway
     image: flyway/flyway:11
     command: migrate
     environment:
@@ -99,6 +102,7 @@ services:
     networks:
       - app-network
   postgres:
+    container_name: postgres
     image: postgres:16-alpine
     restart: always
     ports:
@@ -119,6 +123,7 @@ services:
       timeout: 5s
       retries: 5
   pgadmin:
+    container_name: pgadmin
     image: dpage/pgadmin4
     ports:
       - "8081:80"
