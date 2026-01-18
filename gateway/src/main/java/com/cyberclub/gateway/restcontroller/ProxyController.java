@@ -15,7 +15,7 @@ import com.cyberclub.gateway.Forward;
 public class ProxyController {
 
     private final Forward forwardingService;
-    private static final Set<String> ALLOWED_SERVICES = Set.of("portal", "learn", "challenge", "community");
+    private static final Set<String> ALLOWED_SERVICES = Set.of("identity", "portal", "learn", "challenge", "community");
 
     public ProxyController(Forward forwardingService) {
         this.forwardingService = forwardingService;

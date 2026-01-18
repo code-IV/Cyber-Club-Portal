@@ -11,6 +11,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,6 +26,7 @@ import javax.crypto.SecretKey;
 @Order(2)
 public class JwtFilter extends OncePerRequestFilter {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtFilter.class);
     private final SecretKey key;
     private final JwtProperties properties;
 
@@ -50,7 +53,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.warn("JWT validation failed: {}", ex.getMessage());
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
         } finally {
             // Clear context if you use a thread-local UserContext
