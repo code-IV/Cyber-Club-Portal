@@ -32,7 +32,7 @@ public class PortalUserTest {
 
 
     @Test
-    void admin_canNOt_read() throws Exception{ 
+    void admin_canNOtRead() throws Exception{ 
         AuthResult user = new AuthResult(true, "ADMIN");
 
         when(auth.checkMembership(any())).thenReturn(user);
@@ -46,7 +46,7 @@ public class PortalUserTest {
     }
 
     @Test
-    void user_can_read() throws Exception{ 
+    void user_isAuthorized_butServiceNOtMocked() throws Exception{ 
         AuthResult user = new AuthResult(true, "USER");
         when(auth.checkMembership(any())).thenReturn(user);
             
@@ -69,7 +69,7 @@ public class PortalUserTest {
     }
 
     @Test
-    void req_UnAvailable() throws Exception{ 
+    void req_unavailable() throws Exception{ 
         when(auth.checkMembership(any())).thenThrow(new RuntimeException("Service UnAvailable"));
             
         mockmvc.perform(

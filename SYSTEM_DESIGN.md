@@ -45,7 +45,7 @@ Consistency is managed through a decentralized migration pattern:
 
 ## 5. Future Scalability & Evolution
 
-- **Horizontal Scaling:** Because services are stateless and data-isolated, specific high-traffic modules (like the CTF Judge) can be scaled independently of the administrative Portal.
+- **Horizontal Scaling:** Because services are stateless and schema-isolated, specific high-traffic modules can scale their application tier independently, though database scaling remains shared.
 - **Extensibility:** The architecture supports "Plug-and-Play" domains. Adding a new `Research` or `JobBoard` service requires zero modification to the existing core logic.
 
 ---

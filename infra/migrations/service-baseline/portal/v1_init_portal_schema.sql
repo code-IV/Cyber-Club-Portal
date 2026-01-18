@@ -1,5 +1,5 @@
 
--- Create the identity schema if it doesn't exist. 
+-- Create the portal schema if it doesn't exist.
 CREATE SCHEMA IF NOT EXISTS portal;
 
 -- Set the search path so that subsequent tables are created in the new schema

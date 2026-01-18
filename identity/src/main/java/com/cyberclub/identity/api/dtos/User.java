@@ -9,4 +9,9 @@ public record User(
     String email,
     String password,
     Instant createdAt
-) {}
+) {
+    @Override
+    public String toString() {
+        return "UserRequest[username=" + username + ", email=" + email + "]";
+    }
+}

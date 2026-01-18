@@ -6,6 +6,9 @@ import java.util.UUID;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cyberclub.identity.api.dtos.User;
 import com.cyberclub.identity.repository.UserRepo;
 
@@ -20,6 +23,7 @@ public class UserRegService{
         this.encoder = encoder;
     }
 
+    @Transactional
     public User register(String username, String email, String password){
         if(userRepo.existsByEmail(email)){
             throw new IllegalStateException("email already in use");
@@ -34,8 +38,12 @@ public class UserRegService{
             Instant.now()
         );
 
-        userRepo.save(user);
-        return user;
+        try{
+            userRepo.save(user);
+            return user;
+        } catch (DataIntegrityViolationException ex){
+            throw new IllegalStateException("email already in use", ex);
+        }
     }
 
     public User authenticate(String email, String password) {

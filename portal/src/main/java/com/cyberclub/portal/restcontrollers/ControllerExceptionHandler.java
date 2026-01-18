@@ -58,7 +58,7 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUnAuthorized( NotFoundException ex, HttpServletRequest req){
+    public ErrorResponse handleNotFound(NotFoundException ex, HttpServletRequest req){
         return new ErrorResponse(
             "NOT_FOUND",
             ex.getMessage(),

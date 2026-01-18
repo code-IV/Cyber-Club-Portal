@@ -22,9 +22,9 @@ public class InfoService{
 
         return Map.of(
             "userId", UserContext.get(),
-            "serviName", "portal",
+            "serviceName", "portal",
             "role", user.role(),
-            "message", "this user is member"
+            "message", "this user is authorized"
         );
     }
 }

@@ -54,7 +54,7 @@ public class PortalInfoTest {
     }
 
     @Test
-    void anauthorized_User_Info() throws Exception{ 
+    void unauthorized_User_Info() throws Exception{ 
         AuthResult user = new AuthResult(true, "");
         when(auth.checkMembership(any())).thenReturn(user);    
 

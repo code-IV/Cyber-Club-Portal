@@ -16,6 +16,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import jakarta.validation.Valid;
+
 
 @RestController
 public class UserRegController {
@@ -32,7 +34,7 @@ public class UserRegController {
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponse register(@RequestBody UserRegRequest req) {
+    public UserResponse register(@RequestBody @Valid UserRegRequest req) {
         User user = regService.register(
             req.username(), 
             req.email(),
@@ -47,7 +49,7 @@ public class UserRegController {
     }
 
     @PostMapping("/signin")
-    public UserResponse login(@RequestBody UserLoginRequest req) {
+    public UserResponse login(@RequestBody @Valid UserLoginRequest req) {
         User user = regService.authenticate(
             req.email(),
             req.password()
