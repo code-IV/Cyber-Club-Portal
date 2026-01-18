@@ -95,7 +95,7 @@ public class PortalSettingsTest {
     }
 
     @Test
-    void req_UnAvailable_settings() throws Exception{ 
+    void req_Unavailable_settings() throws Exception{ 
         when(auth.checkMembership(any())).thenThrow(new RuntimeException("Service UnAvailable"));
             
         mockmvc.perform(

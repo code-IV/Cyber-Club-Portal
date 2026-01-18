@@ -12,6 +12,6 @@ public record User(
 ) {
     @Override
     public String toString() {
-        return "UserRequest[username=" + username + ", email=" + email + "]";
+        return "User[ id=" + id + ", username=" + username + ", email=" + email + "]";
     }
 }
