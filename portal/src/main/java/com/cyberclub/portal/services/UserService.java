@@ -6,6 +6,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.util.List;
 import reactor.core.publisher.Mono;
 import com.cyberclub.portal.dtos.Member;
+import com.cyberclub.portal.security.Policies;
 
 @Service
 public class UserService {
@@ -18,7 +19,7 @@ public class UserService {
     }
 
     public List<Member> members(){
-        auth.requireMember();
+        auth.require(Policies.MEMBER);
         return webClient
                 .get()
                 .uri(uriBuilder -> uriBuilder

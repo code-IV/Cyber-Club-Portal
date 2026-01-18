@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 import com.cyberclub.portal.dtos.AuthResult;
 import com.cyberclub.portal.exceptions.ForbiddenException;
+import com.cyberclub.portal.exceptions.NotFoundException;
 
 import reactor.core.publisher.Mono;
 
@@ -19,13 +20,13 @@ public class ClientAuth {
         this.webClient = webClient;
     }
 
-    public AuthResult checkMembership( UUID id, String serviceName){
+    public AuthResult checkMembership( UUID id){
         return webClient
                 .get()
                 .uri( uriBuilder -> uriBuilder
                     .path("/private/api/member/check")
                     .queryParam("userId", id)
-                    .queryParam("serviceName", serviceName)
+                    .queryParam("serviceName", "portal")
                     .build()
                 )
                 .retrieve()
@@ -35,11 +36,11 @@ public class ClientAuth {
                 )
                 .onStatus(
                     status -> status.value() == 404,
-                    res -> Mono.error(new ForbiddenException("NOT FOUND"))
+                    res -> Mono.error(new NotFoundException("NOT_FOUND"))
                 )
                 .onStatus(
                     status -> status.is5xxServerError(),
-                    res -> Mono.error(new RuntimeException("Service UnAvaildable"))
+                    res -> Mono.error(new RuntimeException("Service_UnAvailable"))
                 )
                 .bodyToMono(AuthResult.class)
                 .block();

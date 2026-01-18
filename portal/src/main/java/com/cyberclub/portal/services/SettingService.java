@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.cyberclub.portal.dtos.SettingData;
 import com.cyberclub.portal.context.*;
 import com.cyberclub.portal.repositories.UserSettingRepo;
+import com.cyberclub.portal.security.Policies;
 
 @Service
 public class SettingService {
@@ -18,7 +19,7 @@ public class SettingService {
     }
 
     public void setSetting(SettingData req ){
-        auth.requireAdmin();
+        auth.require(Policies.ADMIN);
         
         settingRepo.setSetting(
             UserContext.get(),

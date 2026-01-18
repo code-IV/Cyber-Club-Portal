@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 // import com.cyberclub.portal.services.AuthService;
 import com.cyberclub.portal.context.*;
 import com.cyberclub.portal.dtos.AuthResult;
+import com.cyberclub.portal.security.Policies;
 
 import java.util.Map;
 
@@ -17,12 +18,12 @@ public class InfoService{
     }
 
     public Map<String, String> getInfo(){
-        AuthResult authorized = auth.requireMember();
+        AuthResult user = auth.require(Policies.MEMBER.or(Policies.ADMIN));
 
         return Map.of(
             "userId", UserContext.get(),
             "serviName", "portal",
-            "role", authorized.role(),
+            "role", user.role(),
             "message", "this user is member"
         );
     }
