@@ -1,5 +1,7 @@
 package com.cyberclub.gateway;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -18,6 +20,7 @@ import java.util.UUID;
 @Component
 public class Forward {
 
+    private final Logger log = LoggerFactory.getLogger(Forward.class);
     private final String internalAuthSecret;
     private final WebClient webClient = WebClient.builder()
             // Set a higher limit for memory buffer if you expect large payloads
@@ -38,18 +41,25 @@ public class Forward {
 
         // 2. Map Incoming Headers to WebClient Headers
         HttpHeaders headers = new HttpHeaders();
-        Collections.list(request.getHeaderNames()).forEach(name -> 
-            headers.add(name, request.getHeader(name))
-        );
+        Collections.list(request.getHeaderNames()).forEach(name -> {
+            if (!name.equalsIgnoreCase("Authorization")
+                && !name.equalsIgnoreCase("X-User-Id")
+                && !name.equalsIgnoreCase("X-Internal-Auth")) {
+
+                headers.add(name, request.getHeader(name));
+            }
+        });
 
         // 3. Add Enrichment Headers
         headers.set("X-Internal-Auth", internalAuthSecret);
-        headers.set("X-Service-Name", (String) request.getAttribute("serviceName"));
         headers.set("X-User-Id", (String) request.getAttribute("userId"));
         headers.set("X-Request-Id", UUID.randomUUID().toString());
 
         // 4. Read the Body
         byte[] body = request.getInputStream().readAllBytes();
+
+        log.info("Id= {}", request.getAttribute("userId"));
+
 
         // 5. Execute Request and block to return ResponseEntity
         // (Note: Since your controller returns ResponseEntity<byte[]>, we use .block() here)

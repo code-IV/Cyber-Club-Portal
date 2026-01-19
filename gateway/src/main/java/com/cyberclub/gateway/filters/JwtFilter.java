@@ -44,21 +44,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
         try {
             String token = extractToken(request);
-
             Claims claims = validateClaims(token);
 
             // Store userId in request context or a custom UserContext
+            request.setAttribute("authenticated", true);
             request.setAttribute("userId", claims.getSubject());
             request.setAttribute("email", claims.get("email", String.class));
 
-            filterChain.doFilter(request, response);
         } catch (Exception ex) {
             log.warn("JWT validation failed: {}", ex.getMessage());
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+            request.setAttribute("authenticated", false);
         } finally {
             // Clear context if you use a thread-local UserContext
-            request.removeAttribute("userId");
         }
+        filterChain.doFilter(request, response);
     }
 
     public Claims validateClaims(String token){

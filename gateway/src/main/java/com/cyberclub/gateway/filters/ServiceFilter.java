@@ -43,6 +43,7 @@ public class ServiceFilter extends OncePerRequestFilter  {
         } catch (IllegalArgumentException ex) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, ex.getMessage());
         } finally {
+            
         }
 
     }

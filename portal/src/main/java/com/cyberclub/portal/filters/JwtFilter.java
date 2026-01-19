@@ -2,6 +2,8 @@ package com.cyberclub.portal.filters;
 
 import java.io.IOException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
+    private final Logger log = LoggerFactory.getLogger(JwtFilter.class);
 
     @Override
     protected void doFilterInternal(
@@ -22,7 +25,12 @@ public class JwtFilter extends OncePerRequestFilter {
         FilterChain filterChain
     )throws ServletException, IOException{
         try{
-            String userId = extractToken(request);
+            String userId = request.getHeader("X-User-Id");
+            if(userId == null || userId.isBlank()){
+                log.error("userId not found.. userId = {}", userId);
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "userId missing");
+                return;
+            }
             if(userId != null){
                 UserContext.set(userId);
             }
@@ -30,14 +38,6 @@ public class JwtFilter extends OncePerRequestFilter {
         } finally {
             UserContext.clear();
         }
-    }
-
-    private String extractToken(HttpServletRequest request){
-        String userId = request.getHeader("X-User-Id");
-        if(userId == null || userId.isBlank()){
-            return null;
-        }
-        return userId;
     }
 
 }

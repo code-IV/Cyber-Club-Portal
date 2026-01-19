@@ -28,7 +28,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(Exception ex, HttpServletRequest req){
-        log.error("[{}] Unhandled exception at {}: {}", 
+        log.error("[{}] Unhandled exception at {}  : {}", 
             TraceContext.getCorrelationId(), req.getRequestURI(), ex.getMessage());
 
         return new ErrorResponse(

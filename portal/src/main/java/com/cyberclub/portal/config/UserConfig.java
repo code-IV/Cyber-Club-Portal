@@ -16,15 +16,15 @@ public class UserConfig {
     public FilterRegistrationBean<JwtFilter> jwtFilterRegistration(JwtFilter jwtFilter) {
         FilterRegistrationBean<JwtFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(jwtFilter);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
         return registration;
     }
 
     @Bean
-    public FilterRegistrationBean<GatewayTrustFilter> tenantFilterRegistration(GatewayTrustFilter gatewayFilter) {
+    public FilterRegistrationBean<GatewayTrustFilter> gatewayFilterRegistration(GatewayTrustFilter gatewayFilter) {
         FilterRegistrationBean<GatewayTrustFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(gatewayFilter);
-        registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 10);
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
         return registration;
     }
 }

@@ -16,7 +16,7 @@ public class ServiceResolver {
         }
 
         if (serviceName == null) {
-            throw new ServiceNotResolvedException("Cannot resolve service from request");
+            return "portal";
         }
 
         return sanitizeService(serviceName);
