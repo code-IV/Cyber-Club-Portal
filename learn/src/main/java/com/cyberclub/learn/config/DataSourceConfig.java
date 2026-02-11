@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Primary;
 
 import javax.sql.DataSource;
 
-import com.cyberclub.learn.tenancy.TenantDataSource;
+import com.cyberclub.learn.datasource.ServiceDataSource;
 
 
 @Configuration
@@ -22,6 +22,6 @@ public class DataSourceConfig {
     @Bean
     @Primary
     public DataSource dataService(@Qualifier("physicalDataSource") DataSource originalDataSource ){
-        return new TenantDataSource(originalDataSource);
+        return new ServiceDataSource(originalDataSource);
     }
 }
