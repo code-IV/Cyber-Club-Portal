@@ -15,7 +15,7 @@ public class TestFlywayConfig {
                 .dataSource(dataSource)
                 .schemas("portal")
                 .createSchemas(true)
-                .locations("filesystem:../infra/migrations/service-baseline/portal")
+                .locations("filesystem:../infra/migrations/portal")
                 .load();
     }
 }

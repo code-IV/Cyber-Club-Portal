@@ -3,7 +3,9 @@
 .vscode
 
 target/
-tools/
 **/target/
+
+tools/
+logs/
 
 copilot-instructions.md

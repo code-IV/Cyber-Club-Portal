@@ -1,6 +1,5 @@
 package com.cyberclub.portal.security;
 
-import jakarta.servlet.FilterChain;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.*;
 

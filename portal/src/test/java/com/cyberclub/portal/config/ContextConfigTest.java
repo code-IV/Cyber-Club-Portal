@@ -12,7 +12,7 @@ import com.cyberclub.portal.filters.*;
 public class ContextConfigTest {
 
     @Bean
-    public FilterRegistrationBean<JwtFilterTest> jwtFilterTest() {
+    public FilterRegistrationBean<JwtFilterTest> jwtFilterRegistrationTest() {
         FilterRegistrationBean<JwtFilterTest> registration = new FilterRegistrationBean<>();
         registration.setFilter(new JwtFilterTest());
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

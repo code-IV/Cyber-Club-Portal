@@ -2,15 +2,14 @@ package com.cyberclub.portal;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.cyberclub.portal.security.ClientAuth;
 import com.cyberclub.portal.dtos.AuthResult;
 import com.cyberclub.portal.exceptions.NotFoundException;
-import com.cyberclub.portal.config.ContextConfigTest;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,6 +21,7 @@ import static org.mockito.ArgumentMatchers.any;
 @AutoConfigureMockMvc
 public class PortalInfoTest extends BaseIntegrationTest {
 
+    private @Value("${INTERNAL_GATEWAY_SECRET}") String secret;
     
     @Autowired
     private MockMvc mockmvc;
@@ -37,6 +37,8 @@ public class PortalInfoTest extends BaseIntegrationTest {
             
         mockmvc.perform(
             get("/portal/info")
+                .header("X-Internal-Auth", secret)
+                .header("X-User-Id", "11111111-1111-1111-1111-111111111111")
         )
         .andExpect(status().isOk());
     }
@@ -48,6 +50,8 @@ public class PortalInfoTest extends BaseIntegrationTest {
 
         mockmvc.perform(
             get("/portal/info")
+                .header("X-Internal-Auth", secret)
+                .header("X-User-Id", "11111111-1111-1111-1111-111111111111")
         )
         .andExpect(status().isOk());
     }
@@ -59,6 +63,8 @@ public class PortalInfoTest extends BaseIntegrationTest {
 
         mockmvc.perform(
             get("/portal/info")
+                .header("X-Internal-Auth", secret)
+                .header("X-User-Id", "11111111-1111-1111-1111-111111111111")
         )
         .andExpect(status().isForbidden())
         .andExpect(jsonPath("$.error").value("FORBIDDEN"))
@@ -72,6 +78,8 @@ public class PortalInfoTest extends BaseIntegrationTest {
 
         mockmvc.perform(
             get("/portal/info")
+                .header("X-Internal-Auth", secret)
+                .header("X-User-Id", "11111111-1111-1111-1111-111111111111")
         )
         .andExpect(status().isNotFound())
         .andExpect(jsonPath("$.error").value("NOT_FOUND"));
