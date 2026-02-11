@@ -3,7 +3,9 @@ package com.cyberclub.portal.filters;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,13 +19,13 @@ public class GatewayTrustFilter extends OncePerRequestFilter {
 
     private final String secret;
 
-    public GatewayTrustFilter() {
-        this.secret = System.getenv("INTERNAL_GATEWAY_SECRET");
-        if (this.secret == null || this.secret.isBlank()) {
-            throw new IllegalStateException("INTERNAL_GATEWAY_SECRET environment variable must be set");
+    public GatewayTrustFilter(@Value ("${INTERNAL_GATEWAY_SECRET}") String secret) {
+        if (secret == null || secret.isBlank()) {
+            throw new IllegalStateException("INTERNAL_GATEWAY_SECRET must be configured and non-blank");
         }
+        this.secret = secret;
     }
-
+    
     @Override
     public void doFilterInternal(
         HttpServletRequest request,

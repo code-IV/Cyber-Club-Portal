@@ -88,6 +88,23 @@ public class UserRepo {
                 .findFirst();
     }
 
+    public List<UserRecord> allUsers(){
+        var sql = """
+                SELECT * FROM identity.users
+                """;
+        
+        RowMapper<UserRecord> mapper = (rs, rowNum) -> 
+        new UserRecord(
+            UUID.fromString(rs.getString("id")),
+            rs.getString("username"),
+            rs.getString("email"),
+            rs.getTimestamp("created_at").toLocalDateTime()
+        );
+        
+        return jdbcTemplate
+                .query(sql, mapper);
+    }
+
     public List<MemberRecord> findAll(String serviceName){
         var sql = """
                 SELECT 

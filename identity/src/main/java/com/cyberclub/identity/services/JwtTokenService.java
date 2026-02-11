@@ -20,10 +20,17 @@ public class JwtTokenService {
 
     public JwtTokenService(JwtProperties properties) {
         this.properties = properties;
+
+        if (properties.secret() == null || properties.secret().length() < 32) {
+            throw new IllegalStateException("JWT secret must be at least 32 characters");
+        }
+
         this.key = Keys.hmacShaKeyFor(
             properties.secret().getBytes(StandardCharsets.UTF_8)
         );
     }
+
+    
 
     public String generate(User user) {
         Instant now = Instant.now();

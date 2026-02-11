@@ -10,6 +10,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cyberclub.identity.api.dtos.User;
+import com.cyberclub.identity.exceptions.UnauthorizedException;
 import com.cyberclub.identity.repository.UserRepo;
 
 @Service
@@ -51,6 +52,6 @@ public class UserRegService{
             .filter(user ->
                 encoder.matches(password, user.password())
             )
-            .orElseThrow(() -> new IllegalStateException("Invalid credentials"));
+            .orElseThrow(() -> new UnauthorizedException("Invalid credentials"));
     }
 }

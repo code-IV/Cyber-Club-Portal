@@ -7,7 +7,7 @@ services:
     working_dir: /app
     command: ./mvnw spring-boot:run
     ports:
-      - "9001:8080"
+      - "9006:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -25,7 +25,7 @@ services:
     working_dir: /app
     command: ./mvnw spring-boot:run
     ports:
-      - "9002:8080"
+      - "9004:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -43,7 +43,7 @@ services:
     working_dir: /app
     command: ./mvnw spring-boot:run
     ports:
-      - "9004:8080"
+      - "9002:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -64,7 +64,7 @@ services:
     working_dir: /app
     command: ./mvnw spring-boot:run
     ports:
-      - "9005:8080"
+      - "9000:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DATABASE_URL=${POSTGRES_URL}
@@ -144,6 +144,24 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+
+  flyway:
+    container_name: flyway
+    image: flyway/flyway:11
+    command: migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infra/migrations/identity:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    networks:
+      - app-network
 
 volumes:
   pgdata:

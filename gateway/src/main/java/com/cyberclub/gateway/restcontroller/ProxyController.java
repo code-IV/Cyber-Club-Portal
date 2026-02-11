@@ -1,10 +1,12 @@
 package com.cyberclub.gateway.restcontroller;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,17 @@ import com.cyberclub.gateway.Forward;
 public class ProxyController {
 
     private final Logger log = LoggerFactory.getLogger(ProxyController.class);
+    @Value("${gateway.localMode:false}") // default true for local
+    private boolean localMode;
     private final Forward forwardingService;
+    private static final Map<String, String> LOCAL_SERVICE_PORTS = Map.of(
+        "identity", "8082",
+        "portal", "9000",
+        "learn", "9002",
+        "challenge", "9004",
+        "community", "9006"
+    );
+
     private static final Set<String> SERVICES = Set.of("identity", "portal", "learn", "challenge", "community");
 
     public ProxyController(Forward forwardingService) {
@@ -36,14 +48,19 @@ public class ProxyController {
             throw new IllegalArgumentException("unidentified service");
         } 
 
-        log.info("auth={}, service={}",
-            authenticated,
-            service
-        );
+        String downstreamUrl;
+        if (localMode) {
+            String port = LOCAL_SERVICE_PORTS.get(service);
+            downstreamUrl = "http://localhost:" + port;
+        } else {
+            // Docker / production mode
+            downstreamUrl = "http://" + service + ":8080";
+        }
 
-        
-        String downstreamUrl = "http://"+ service + ":8080"; // Use HTTPS for encryption
+        log.info("auth={}, service={}, url={}", authenticated, service, downstreamUrl);
+
         return forwardingService.forward(request, downstreamUrl);
     }
+
 
 }

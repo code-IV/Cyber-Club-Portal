@@ -1,0 +1,5 @@
+flyway.url=jdbc:postgresql://localhost:5433/multi_service_db
+flyway.user=appuser_dev
+flyway.password=dev_secure_password
+flyway.locations=filesystem:infra/migrations/{schema}
+flyway.schemas={schema}
