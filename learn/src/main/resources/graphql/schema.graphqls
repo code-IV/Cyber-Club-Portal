@@ -1,0 +1,30 @@
+type Course {
+  id: ID!
+  title: String!
+  description: String
+  createdAt: String!
+  lessons: [Lesson!]!
+}
+
+type Lesson {
+  id: ID!
+  courseId: ID!
+  title: String!
+  content: String
+  orderIndex: Int!
+}
+
+type Query {
+  courses: [Course!]!
+  course(id: ID!): Course
+}
+
+type Mutation {
+  createCourse(title: String!, description: String): Course!
+  createLesson(
+    courseId: ID!
+    title: String!
+    content: String
+    orderIndex: Int!
+  ): Lesson!
+}

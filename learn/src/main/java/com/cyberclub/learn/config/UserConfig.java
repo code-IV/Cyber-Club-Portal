@@ -20,7 +20,7 @@ public class UserConfig {
     }
 
     @Bean
-    public FilterRegistrationBean<GatewayTrustFilter> gatewayTrFilterRegistration(GatewayTrustFilter gatewayTrustFilter){
+    public FilterRegistrationBean<GatewayTrustFilter> gatewayTrustFilterRegistration(GatewayTrustFilter gatewayTrustFilter){
         FilterRegistrationBean<GatewayTrustFilter> registration = new FilterRegistrationBean<>();
         registration.setFilter(gatewayTrustFilter);
         registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

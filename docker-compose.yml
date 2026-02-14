@@ -49,6 +49,7 @@ services:
       - DATABASE_URL=${POSTGRES_URL}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - INTERNAL_GATEWAY_SECRET=${INTERNAL_GATEWAY_SECRET}
     volumes:
       - ./learn:/app
       - maven-repo:/root/.m2
@@ -57,6 +58,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate-learn:
+        condition: service_completed_successfully
 
   portal:
     container_name: portal
@@ -76,6 +79,11 @@ services:
       - maven-repo:/root/.m2
     networks:
       - app-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate-portal:
+        condition: service_completed_successfully
 
   gateway:
     container_name: gateway
@@ -122,6 +130,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      migrate-identity:
+        condition: service_completed_successfully
 
   # --- INFRASTRUCTURE ---
 
@@ -145,10 +155,10 @@ services:
       timeout: 5s
       retries: 5
 
-  flyway:
-    container_name: flyway
+  migrate-identity:
+    container_name: migrate-identity
     image: flyway/flyway:11
-    command: migrate
+    command: -schemas=identity -table=identity_schema_history -locations=filesystem:/flyway/sql migrate
     environment:
       FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       FLYWAY_USER: ${POSTGRES_USER}
@@ -158,8 +168,38 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      flyway:
-        condition: service_completed_successfully
+    networks:
+      - app-network
+
+  migrate-portal:
+    container_name: migrate-portal
+    image: flyway/flyway:11
+    command: -schemas=portal -table=portal_schema_history -locations=filesystem:/flyway/sql migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infra/migrations/portal:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  migrate-learn:
+    container_name: migrate-learn
+    image: flyway/flyway:11
+    command: -schemas=learn -table=learn_schema_history -locations=filesystem:/flyway/sql migrate
+    environment:
+      FLYWAY_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
+      FLYWAY_USER: ${POSTGRES_USER}
+      FLYWAY_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./infra/migrations/learn:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
     networks:
       - app-network
 

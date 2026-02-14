@@ -19,7 +19,7 @@ import com.cyberclub.gateway.Forward;
 public class ProxyController {
 
     private final Logger log = LoggerFactory.getLogger(ProxyController.class);
-    @Value("${gateway.localMode:false}") // default true for local
+    @Value("${gateway.localMode:true}") // default true for local
     private boolean localMode;
     private final Forward forwardingService;
     private static final Map<String, String> LOCAL_SERVICE_PORTS = Map.of(
